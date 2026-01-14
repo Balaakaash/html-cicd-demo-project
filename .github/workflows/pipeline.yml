@@ -17,10 +17,13 @@ jobs:
       run: |
         test -f index.html
 
-    - name: QUALITY - Check html tag
+    - name: QUALITY - HTML basic quality checks
       run: |
         grep "<html>" index.html
-
+        grep "<head>" index.html
+        grep "<body>" index.html
+        grep "<title>" index.html
+        
     - name: Login to Docker Hub
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -28,7 +31,14 @@ jobs:
     - name: Build Docker image
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/html-cicd-demo:latest .
-
+    
+        - name: SECURITY - Trivy scan Docker image
+          uses: aquasecurity/trivy-action@0.24.0
+          with:
+            image-ref: ${{ secrets.DOCKER_USERNAME }}/html-cicd-demo:latest
+            severity: HIGH,CRITICAL
+            exit-code: 1
+            
     - name: Push Docker image
       run: |
         docker push ${{ secrets.DOCKER_USERNAME }}/html-cicd-demo:latest
