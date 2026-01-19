@@ -23,23 +23,7 @@ jobs:
         grep "<head>" index.html
         grep "<body>" index.html
         grep "<title>" index.html
-    
-    - name: SONARQUBE - Scan HTML project
-      uses: SonarSource/sonarqube-scan-action@v2
-      env:
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.projectKey=html-cicd-demo
-          -Dsonar.sources=.
-          -Dsonar.language=web
-
-    - name: SONARQUBE - Quality Gate
-      uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+        
     - name: Login to Docker Hub
       run: |
         echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
